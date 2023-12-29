@@ -21,6 +21,8 @@ public class DbEngine {
 
     public boolean run(String query) {
         try {
+            if(this.con == null)
+                return false;
             statement = con.createStatement();
             statement.executeUpdate(query);
             return true;

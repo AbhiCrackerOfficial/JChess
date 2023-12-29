@@ -17,7 +17,7 @@ public class ChessBoard {
     private static final int SQ_SIZE = 90;
     private Pair<Integer, Integer> selectedTile;
     private List<Pair<Integer, Integer>> playerClicks;
-    private boolean GameOver = false;
+    private boolean GameOver = false, inProgress = true;
     private boolean playerone, playertwo;
     InfoBoard info;
     String whitePlayer, blackPlayer;
@@ -50,13 +50,10 @@ public class ChessBoard {
                     info.UpdateMoves(gameState.moveLog);
                     boardPanel.repaint();
                 } else if (e.getKeyChar() == 'r') {
-                    new Thread(() -> {
-                        info.dispose();
-                        frame.dispose();
-                    }).start();
-                    new Thread(() -> {
-                        new InitEngine();
-                    }).start();
+                    inProgress = false;
+                    info.dispose();
+                    frame.dispose();
+                    new InitEngine();
                 }
             }
 
@@ -149,19 +146,8 @@ public class ChessBoard {
             }
         }
 
-        // Handle AI's move if it's not the player's turn
-        // if (!GameOver && !humanTurn) {
-        // decide(GameOver, info, gameState, whitePlayer, blackPlayer);
-
-        // Move aiMove = AiEngine.bestMove(gameState, gameState.getValidMoves());
-        // if (aiMove == null)
-        // aiMove = AiEngine.randomMove(gameState.getValidMoves());
-        // gameState.makeMove(aiMove, true);
-        // info.UpdateMoves(gameState.moveLog);
-        // }
-
         // Check for game over conditions and repaint the board
-        decide(GameOver, info, gameState, whitePlayer, blackPlayer);
+        decide(info, gameState, whitePlayer, blackPlayer);
         boardPanel.repaint();
 
         // Highlight valid moves after a short delay for better visualization
@@ -183,15 +169,15 @@ public class ChessBoard {
         info.UpdateMoves(gameState.moveLog);
 
         // Check for game over conditions and repaint the board after AI's move
-        decide(GameOver, info, gameState, whitePlayer, blackPlayer);
+        decide(info, gameState, whitePlayer, blackPlayer);
         boardPanel.repaint();
     }
 
     public void startGame() {
         // Start a new thread to continuously check and make AI moves
         new Thread(() -> {
-            while (!GameOver) {
-                decide(GameOver, info, gameState, whitePlayer, blackPlayer);
+            while (!GameOver && inProgress) {
+                decide(info, gameState, whitePlayer, blackPlayer);
                 boolean humanTurn = (gameState.whiteToMove && playerone) || (!gameState.whiteToMove && playertwo);
                 if (!GameOver && !humanTurn) {
                     makeAIMove();
@@ -206,38 +192,29 @@ public class ChessBoard {
         }).start();
     }
 
-    void decide(boolean gameOver, InfoBoard info, ChessEngine gameState, String whitePlayer, String blackPlayer) {
+    void decide(InfoBoard info, ChessEngine gameState, String whitePlayer, String blackPlayer) {
         String s = new String();
         for (Move move : gameState.moveLog) {
             s += move.getChessNotation() + ",";
         }
         if (gameState.checkMate) {
-            gameOver = true;
+            GameOver = true;
             String winner = gameState.whiteToMove ? "Black" : "White";
             JOptionPane.showMessageDialog(null, winner + " Wins", "Game Over",
                     JOptionPane.INFORMATION_MESSAGE);
             db.run("INSERT INTO `matches`( `Player1Name`, `Player2Name`, `Result`, `MoveLogs`) VALUES ('"
                     + whitePlayer + "','" + blackPlayer + "','" + winner + " wins','" + s + "')");
-            new Thread(() -> {
-                info.dispose();
-                frame.dispose();
-            }).start();
-            new Thread(() -> {
-                new InitEngine();
-            }).start();
+            info.dispose();
+            frame.dispose();
+            new InitEngine();
         } else if (gameState.staleMate) {
-            gameOver = true;
+            GameOver = true;
             JOptionPane.showMessageDialog(null, "Stalemate", "Game Over", JOptionPane.INFORMATION_MESSAGE);
             db.run("INSERT INTO `matches`( `Player1Name`, `Player2Name`, `Result`, `MoveLogs`) VALUES ('"
                     + whitePlayer + "','" + blackPlayer + "','Stalemate','" + s + "')");
-            new Thread(() -> {
-                info.dispose();
-                frame.dispose();
-            }).start();
-
-            new Thread(() -> {
-                new InitEngine();
-            }).start();
+            info.dispose();
+            frame.dispose();
+            new InitEngine();
         }
     }
 
