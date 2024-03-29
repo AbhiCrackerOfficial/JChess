@@ -27,6 +27,12 @@ To get started with JChess, follow these steps:
 - Enter 'Z' to reset the Game
 - Enjoy playing chess!
 
+# Screenshots
+![init](https://github.com/abhicrackerofficial/JChess/blob/main/src/Screenshots/Init.png)
+![ingame](https://github.com/abhicrackerofficial/JChess/blob/main/src/Screenshots/ingame.png)
+![Info](https://github.com/abhicrackerofficial/JChess/blob/main/src/Screenshots/InfoBoard.png)
+![win](https://github.com/abhicrackerofficial/JChess/blob/main/src/Screenshots/win.png)
+
 # Contributing
 
 Contributions are welcome! If you find any bugs or have suggestions for improvements, please open an issue or submit a pull request.
