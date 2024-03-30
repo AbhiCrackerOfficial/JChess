@@ -1,12 +1,12 @@
 <h1 align="center">JChess</h1>
 <h6 align="center">Chess in Java</h6></br>
 
-JChess is a Java-based implementation of the classic game of chess. This repository provides a fully functional chess game that can be played on the command line.
+JChess is a Java-based implementation of the classic game of chess. This repository provides a fully functional chess game that can be played in gui mode and can be visualized in cli mode.
 
 # Features
 
 - Complete chess game logic implemented in Java
-- Command line interface for playing the game
+- Graphical user interface for playing the game
 - Support for all standard chess rules, except castling and en passant
 - Basic AI opponent for single-player mode
 - Move validation and error handling
